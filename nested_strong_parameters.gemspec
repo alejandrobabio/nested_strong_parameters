@@ -8,8 +8,8 @@ Gem::Specification.new do |spec|
   spec.version       = NestedStrongParameters::VERSION
   spec.authors       = ["Alejandro Babio\n"]
   spec.email         = ["alejandro.e.babio@hotmail.com"]
-  spec.summary       = %q{TODO: Write a short summary. Required.}
-  spec.description   = %q{TODO: Write a longer description. Optional.}
+  spec.summary       = %q{Make simple the use of nested_attributes with strong_parameters}
+  spec.description   = %q{Make simple the use of nested_attributes with strong_parameters}
   spec.homepage      = ""
   spec.license       = "MIT"
 
