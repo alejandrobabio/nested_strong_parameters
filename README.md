@@ -2,8 +2,6 @@
 
 If in your Rails app you use strong_parameters with nested_attributes, and believe the old attr_accessible were easier to use. This gem is for you.
 
-NestedStrongParameters make simple the use of nested_attributes with strong_parameters.
-
 ## Installation
 
 Add this line to your application's Gemfile:
@@ -23,6 +21,10 @@ Or install it yourself as:
 ## Usage
 
 In your models use `strong_fields` to define the whitelist of fields that can be updated by params. If a model accepts nested attributes for `some_model`, add the field `<some_model>_attributes`. Also you can set a role with :as option, and works fine with STI. Yes, just like we used to do with protected_attributes.
+
+And then use on permit this way: `params.permit(<Model>.whitelist)`
+
+An example:
 
 ```ruby
   Class Project < ActiveRecord::Base
@@ -44,6 +46,7 @@ In your models use `strong_fields` to define the whitelist of fields that can be
 Now call permit on params is really easy:
 
 ```ruby
+  # at console
   # with Project.whitelist, I got:
   ~/ (main) > Project.whitelist
   => [:name, :description, {:tasks_attributes=>[:name, :start, :end]}]
@@ -117,8 +120,50 @@ Can I avoid error prone with whitelist? Take a look to this real life example:
 
   # controller code with nested_strong_parameters:
   Dealing.create(params.permit(Dealing.whitelist))
-  # vs/ raw
-  Dealing.create(params.permit([:due_date, :note, :status, {:items_attributes=>[:amount, :dealing_id, :product_selector, :price, :sign, :reference_value, :chk_item, :sequence, {:security_items_attributes=>[:commission, :commission_rate, :interest, :interest_rate, :net_value, :security_id, :item_id, :sequence, {:check_attributes=>[:amount, :note, :payment_day, :commodity_id, :owner, :branch, :number, :bank_lookup, :signer_lookup, :chk_refuse]}, {:loan_attributes=>[:amount, :note, :payment_day, :commodity_id, :owner, :due_date, :params]}]}, :payer_sequence, :paid_items_count]}, {:person_attributes=>[:name, :phone, :mobile, :address, :city, :province, :estate, :postal_code, :email, :note]}]))
+
+  # without nested_strong_parameters:
+  Dealing.create(params.permit(
+    [
+      :due_date, :note, :status,
+      {
+        :items_attributes=>
+          [
+            :amount, :dealing_id, :product_selector, :price, :sign,
+            :reference_value, :chk_item, :sequence,
+            {
+              :security_items_attributes=>
+                [
+                  :commission, :commission_rate, :interest, :interest_rate,
+                  :net_value, :security_id, :item_id, :sequence,
+                  {
+                    :check_attributes=>
+                      [
+                        :amount, :note, :payment_day, :commodity_id, :owner,
+                        :branch, :number, :bank_lookup, :signer_lookup,
+                        :chk_refuse
+                      ]
+                  },
+                  {
+                    :loan_attributes=>
+                      [
+                        :amount, :note, :payment_day, :commodity_id, :owner,
+                        :due_date, :params
+                      ]
+                  }
+                ]
+            },
+            :payer_sequence, :paid_items_count
+          ]
+      },
+      {
+        :person_attributes=>
+          [
+            :name, :phone, :mobile, :address, :city, :province, :estate,
+            :postal_code, :email, :note
+          ]
+      }
+    ]
+  )
 
 ```
 

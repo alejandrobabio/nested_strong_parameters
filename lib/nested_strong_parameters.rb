@@ -1,5 +1,2 @@
 require "nested_strong_parameters/version"
-
-module NestedStrongParameters
-  # Your code goes here...
-end
+require "nested_strong_parameters/nested_strong_parameters"
