@@ -1,4 +1,5 @@
 require "active_support/concern"
+require "active_support/core_ext"
 
 module NestedStrongParameters
   extend ActiveSupport::Concern
@@ -10,9 +11,10 @@ module NestedStrongParameters
 
   module ClassMethods
     def strong_fields(*args)
-      options = args.extract_options!
+      options = extract_option_as(args)
       roles = options[:as] || :default
 
+      self._strong_fields = self._strong_fields.deep_dup
       Array(roles).each do |role|
         self._strong_fields[role] ||= []
         self._strong_fields[role] += args
@@ -24,6 +26,14 @@ module NestedStrongParameters
     end
 
   private
+
+    def extract_option_as(args)
+      if args.last.is_a?(Hash) && args.last[:as]
+        args.pop
+      else
+        {}
+      end
+    end
 
     def map_params(model, role = nil)
       fields = model._strong_fields[:default]

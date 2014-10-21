@@ -20,7 +20,7 @@ Or install it yourself as:
 
 ## Usage
 
-In your models use `strong_fields` to define the whitelist of fields that can be updated by params. If a model accepts nested attributes for `some_model`, add the field `<some_model>_attributes`. Also you can set a role with :as option, and works fine with STI. Yes, just like we used to do with protected_attributes.
+In your models use `strong_fields` to define the whitelist of fields that can be updated by params. If a model accepts nested attributes for `some_model`, add the field `<some_model>_attributes`. Also you can set a role with :as option, and works fine with STI. Yes, just like we used to do with protected_attributes. And an array parameter must be write in the same fashion at we do with strong_parameters.
 
 And then use on permit this way: `params.permit(<Model>.whitelist)`
 
@@ -29,10 +29,12 @@ An example:
 ```ruby
   Class Project < ActiveRecord::Base
     has_many :tasks
+    has_many :taggings
+    has_many :tags, through: :taggings
 
     accepts_nested_attributes_for :tasks
 
-    strong_fields :name, :description, :tasks_attributes
+    strong_fields :name, :description, :tasks_attributes, tag_ids: []
     strong_fields :budget, as: :admin
   end
 
@@ -49,11 +51,13 @@ Now call permit on params is really easy:
   # at console
   # with Project.whitelist, I got:
   ~/ (main) > Project.whitelist
-  => [:name, :description, {:tasks_attributes=>[:name, :start, :end]}]
+  => [:name, :description, {:tasks_attributes=>[:name, :start, :end]},
+  {tag_ids: []}]
 
   # or with admin role:
   ~/ (main) > Project.whitelist(:admin)
-  => [:name, :description, {:tasks_attributes=>[:name, :start, :end]}, :budget]
+  => [:name, :description, {:tasks_attributes=>[:name, :start, :end]},
+  {tag_ids: []}, :budget]
 
   # used to call permit
   @project.update_attributes(params.permit(Project.whitelist))
