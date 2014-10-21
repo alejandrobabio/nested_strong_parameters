@@ -38,19 +38,18 @@ module NestedStrongParameters
     def map_params(model, role = nil)
       fields = model._strong_fields[:default]
       fields += model._strong_fields.fetch(role) { [] }
-      fields.uniq!
 
-      fields.map do |field|
+      fields.uniq.map do |field|
         if field.to_s.match /_attributes$/
-          {
-            field => map_params(
-              field.to_s.gsub(/_attributes$/, '').classify.constantize, role
-            )
-          }
+          { field => map_params(nested_model(field), role) }
         else
           field
         end
       end
+    end
+
+    def nested_model(field)
+      field.to_s.gsub(/_attributes$/, '').classify.constantize
     end
   end
 end
