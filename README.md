@@ -22,7 +22,7 @@ Or install it yourself as:
 
 In your models use `strong_fields` to define the whitelist of fields that can be updated by params. If a model accepts nested attributes for `some_model`, add the field `<some_model>_attributes`. Also you can set a role with :as option, and works fine with STI. Yes, just like we used to do with protected_attributes. And an array parameter must be write in the same fashion at we do with strong_parameters.
 
-And then use on permit this way: `params.permit(<Model>.whitelist)`
+And then use on permit this way: `params.require(:<model>).permit(<Model>.whitelist)`
 
 An example:
 
@@ -60,7 +60,7 @@ Now call permit on params is really easy:
   {tag_ids: []}, :budget]
 
   # used to call permit
-  @project.update_attributes(params.permit(Project.whitelist))
+  @project.update_attributes(params.require(:project).permit(Project.whitelist))
 ```
 
 Can I avoid error prone with whitelist? Take a look to this real life example:
@@ -123,10 +123,10 @@ Can I avoid error prone with whitelist? Take a look to this real life example:
       :note]}]
 
   # controller code with nested_strong_parameters:
-  Dealing.create(params.permit(Dealing.whitelist))
+  Dealing.create(params.require(:dealing).permit(Dealing.whitelist))
 
   # without nested_strong_parameters:
-  Dealing.create(params.permit(
+  Dealing.create(params.require(:dealing).permit(
     [
       :due_date, :note, :status,
       {
