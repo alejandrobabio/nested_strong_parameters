@@ -1,4 +1,4 @@
-# NestedStrongParameters
+# NestedStrongParameters [![Build Status](https://travis-ci.org/alejandrobabio/nested_strong_parameters.svg?branch=master)](https://travis-ci.org/alejandrobabio/nested_strong_parameters)
 
 If in your Rails app you use strong_parameters with nested_attributes, and believe the old attr_accessible were easier to use. This gem is for you.
 
